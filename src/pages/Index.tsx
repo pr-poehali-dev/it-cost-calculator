@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import Icon from '@/components/ui/icon';
 import { Switch } from '@/components/ui/switch';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 // Типы данных
 interface Employee {
@@ -653,6 +654,96 @@ const Index = () => {
                   <p className="text-3xl font-bold text-white font-mono">
                     {calculations.profitability.toFixed(1)}%
                   </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Icon name="PieChart" className="h-5 w-5 text-purple-400" />
+                    Распределение затрат
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: 'Персонал', value: calculations.personnelCost, color: '#9b87f5' },
+                          { name: 'Оборудование', value: calculations.equipmentCost, color: '#0EA5E9' },
+                          { name: 'Доп. услуги', value: calculations.servicesCost, color: '#10B981' },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {[
+                          { name: 'Персонал', value: calculations.personnelCost, color: '#9b87f5' },
+                          { name: 'Оборудование', value: calculations.equipmentCost, color: '#0EA5E9' },
+                          { name: 'Доп. услуги', value: calculations.servicesCost, color: '#10B981' },
+                        ].map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', borderRadius: '8px' }}
+                        itemStyle={{ color: '#fff' }}
+                        formatter={(value: number) => `${value.toLocaleString('ru-RU')} ₽`}
+                      />
+                      <Legend
+                        wrapperStyle={{ color: '#cbd5e1' }}
+                        formatter={(value) => <span style={{ color: '#cbd5e1' }}>{value}</span>}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Icon name="BarChart3" className="h-5 w-5 text-blue-400" />
+                    Сравнение текущий / прогноз
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart
+                      data={[
+                        {
+                          name: 'Текущий период',
+                          Персонал: calculations.personnelCost,
+                          Оборудование: calculations.equipmentCost,
+                          Услуги: calculations.servicesCost,
+                        },
+                        {
+                          name: 'Прогноз на год',
+                          Персонал: calculations.personnelCost * (1 + settings.salaryIndexation / 100),
+                          Оборудование: calculations.equipmentCost * (1 + settings.priceGrowth / 100),
+                          Услуги: calculations.servicesCost * (1 + settings.priceGrowth / 100),
+                        },
+                      ]}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+                      <XAxis dataKey="name" stroke="#cbd5e1" />
+                      <YAxis stroke="#cbd5e1" tickFormatter={(value) => `${(value / 1000).toFixed(0)}к`} />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', borderRadius: '8px' }}
+                        itemStyle={{ color: '#fff' }}
+                        formatter={(value: number) => `${value.toLocaleString('ru-RU')} ₽`}
+                      />
+                      <Legend wrapperStyle={{ color: '#cbd5e1' }} />
+                      <Bar dataKey="Персонал" fill="#9b87f5" />
+                      <Bar dataKey="Оборудование" fill="#0EA5E9" />
+                      <Bar dataKey="Услуги" fill="#10B981" />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </CardContent>
               </Card>
             </div>
